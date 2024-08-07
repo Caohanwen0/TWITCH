@@ -3,7 +3,6 @@ import subprocess
 from pydub import AudioSegment
 import numpy as np
 
-
 def is_file_empty(file_path):
     return os.path.getsize(file_path) == 0
 
@@ -33,11 +32,6 @@ def save_volumes(volumes, output_file):
             f.write(f"{volume}\n")
 
 def max_volumes(videoname):
-
-    import os
-    import subprocess
-    from pydub import AudioSegment
-    import numpy as np
 
     def convert_to_wav(input_file):
         output_file = os.path.splitext(input_file)[0] + ".wav"
