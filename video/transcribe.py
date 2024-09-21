@@ -71,3 +71,9 @@ for audio_file in audio_files:
     print("Transcribing", audio_file_path)
     transcribe_and_save_csv(audio_file_path, video_folder)
     print("Transcription complete.")
+    # remove all chunk files
+    for f in os.listdir(video_folder):
+        # if it contains "chunk" and the audio file name
+        if "chunk" in f and audio_file.replace('.wav', '') in f:
+            os.remove(os.path.join(video_folder, f))
+    print("Removed all temporary chunk files.")
