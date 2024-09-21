@@ -3,17 +3,20 @@ import subprocess
 from pydub import AudioSegment
 import numpy as np
 
+VIDEO_FOLDER = "../GTA_video"
+SAVE_FOLDER = "../GTA_video_volume"
+os.makedirs(SAVE_FOLDER, exist_ok=True)
+
 def is_file_empty(file_path):
     return os.path.getsize(file_path) == 0
 
 def check_log_status(file_id):
-    #check if file exist
+    # Check if file exists
     if os.path.exists(f'../clean/{file_id}.csv') and not is_file_empty(f'../clean/{file_id}.csv'):
         print(f"File {file_id}.csv already exists. Start processing volume of the corresponding file.")
         return True
     else:
         return False
-
 
 def get_max_volume(videoname, output_file, file_id):
     if check_log_status(file_id):
@@ -24,7 +27,6 @@ def get_max_volume(videoname, output_file, file_id):
     else:
         print(f"File {file_id}.csv does not exist.")
         return
-    
 
 def save_volumes(volumes, output_file):
     with open(output_file, 'w') as f:
@@ -55,18 +57,20 @@ def max_volumes(videoname):
             max_volumes.append(max_volume)
 
         return max_volumes
-    filename = f'video/{videoname}'  # Replace 'input.mkv' with the name of your MKV file
-    wav_filename = convert_to_wav(filename)
+
+    filename = f'{VIDEO_FOLDER}/{videoname}'
+    wav_filename = convert_to_wav(filename)  # Convert any input format to WAV
     max_volumes = get_max_volume_each_second(wav_filename)
-    save_volumes(max_volumes[1:], f'volume/{id}.txt')
-    # Remove the temporary WAV file
-    os.remove(wav_filename)
+    save_volumes(max_volumes[1:], f'{SAVE_FOLDER}/{os.path.splitext(videoname)[0]}.txt')
+    # Remove the temporary WAV file if needed
+    os.remove(wav_filename)  # Optional: Remove WAV file after processing
 
+# Get the list of files in the video folder
+video_list = os.listdir(VIDEO_FOLDER)
 
-video_list = os.listdir('video')
-# filter those end with ".mkv"
-video_list = [video for video in video_list if video.endswith('.mkv')]
-video_list = sorted(video_list)
-for videoname in video_list:
-    id = videoname.split('.')[0]
-    get_max_volume(videoname, f'volume/{id}.txt', id)
+# Filter files that end with ".mkv" or ".m4a"
+video_list = [video for video in video_list if video.endswith('.mkv') or video.endswith('.m4a')]
+
+for video in video_list:
+    print(f"Processing video {video}...")
+    max_volumes(video)
